@@ -20,6 +20,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
+  bool _handleScrollNotification(ScrollNotification scrollInfo) {
+    if (scrollInfo is OverscrollNotification)
+      BlocProvider.of<GetUserCubit>(context).getUsersLists(scrollInfo);
+
+    return false;
+  }
+
   _getUser() async {
     BlocProvider.of<GetUserCubit>(context).getUser();
   }
@@ -49,6 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Center(child: CircularProgressIndicator());
               if (state is GetUserSuccess)
                 return UsersItems(
+                  isReachEnd: state.isReachEnd,
+                  onScrollNotification: (ScrollNotification notification) =>
+                      _handleScrollNotification(notification),
                   userModel: state.userModel,
                 );
               if (state is SavedUser)
