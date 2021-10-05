@@ -18,6 +18,21 @@ class ApiClient {
     }
   }
 
+  Future<List<UserModel>> getUsersLists(int page) async {
+    final response = await http.get(
+      Uri.parse(
+          '${ApiConstants.BASE_URL}${ApiConstants.GET_USER}/page=$page&per_page=100'),
+      headers: {"Authorization": "token ${ApiConstants.token}"},
+    );
+    if (response.statusCode == 200) {
+      print("Response ${response.body}");
+      final userModel = userModelFromJson(response.body);
+      return userModel;
+    } else {
+      throw Exception(response);
+    }
+  }
+
   Future<MyProfileModel> getMyProfile() async {
     final response = await http.get(Uri.parse(
         '${ApiConstants.BASE_URL}${ApiConstants.GET_USER}/${ApiConstants.MY_PROFILE}'));
