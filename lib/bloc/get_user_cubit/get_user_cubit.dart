@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:github/data/core/api_client.dart';
 import 'package:github/data/db_helper/db_helper.dart';
 import 'package:github/data/model/db_user_model.dart';
@@ -16,14 +17,40 @@ class GetUserCubit extends Cubit<GetUserState> {
   List<UserModel> userModel = [];
   late MyProfileModel myProfileModel;
 
+  int _pageNumber = 1;
+  double _pixels = 0.0;
+
   void getUser() async {
     try {
       emit(GetUserLoading());
       userModel = await _apiClient.getUser();
-      emit(GetUserSuccess(userModel: userModel));
+      emit(GetUserSuccess(userModel: userModel,isReachEnd: false));
     } catch (e) {
       print(e);
       emit(GetUserFailure(error: e.toString()));
+    }
+  }
+
+  void getUsersLists(
+    ScrollNotification notification,
+  ) async {
+    if (notification.metrics.pixels == notification.metrics.maxScrollExtent &&
+        _pixels != notification.metrics.pixels) {
+      _pageNumber++;
+      print('_pageNumber $_pageNumber');
+      _pixels = notification.metrics.pixels;
+        emit(GetUserSuccess(
+          userModel: userModel,
+          isReachEnd: false, 
+        ));
+        try {
+      emit(GetUserLoading());
+      userModel = await _apiClient.getUsersLists(_pageNumber);
+      emit(GetUserSuccess(userModel: userModel,isReachEnd: true));
+    } catch (e) {
+      print(e);
+      emit(GetUserFailure(error: e.toString()));
+    }
     }
   }
 
