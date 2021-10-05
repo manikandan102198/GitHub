@@ -13,11 +13,12 @@ class GetUserLoading extends GetUserState {}
 
 class GetUserSuccess extends GetUserState {
   final List<UserModel> userModel;
+  final bool isReachEnd;
 
-  GetUserSuccess({required this.userModel});
+  GetUserSuccess( {required this.isReachEnd,required this.userModel});
 
   @override
-  List<Object> get props => [userModel];
+  List<Object> get props => [userModel,isReachEnd];
 }
 
 class SavedUser extends GetUserState {
